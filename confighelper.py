@@ -202,6 +202,10 @@ def load(fname, evar=EVAR, lvar=LVAR, cvar=CVAR, format=None):
     
     path, name = os.path.split(fname)
     
+	# if path is blank, assume current working directory
+    if path.strip()=="":
+        path = os.getcwd()
+	
     # open the filename and read as a string
     confstr = open(fname, 'r').read()
     
