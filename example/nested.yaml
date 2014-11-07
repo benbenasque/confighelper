@@ -1,0 +1,8 @@
+option1         : a                # you can comment a yaml file, handy for documentation 
+'%[nested2.yaml]' : dummyvalue       # putting another file as a key will merge the specified file
+                                   # into the same level as the key and ignore the value
+
+option3         : '%[nested3.yaml]'  # putting another file as a value will expand the file
+                                   # as a child of the parent key
+option4         : $(HOME)          # environment variables will be expanded
+option5         : '%(option1)'       # local variables already defined can be referenced                     
