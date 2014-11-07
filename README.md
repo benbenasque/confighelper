@@ -2,15 +2,19 @@
 confighelper.py
 ===========================================================
 
+Author: Sam Hawkins, sam@computing.io
+
+
 ## Intro
-confighlper.py allows you to specify python configurations in a 
-yaml file AND/OR at the command-line, with command-line arguments 
-overwriding those in the file.
+`confighlper.py` convenient file and command-line based configurations.
+
+It uses the [docopt](https://github.com/docopt/docopt) module, so please 
+respect their awesomeness. 
+
 
 ## Description
-
-confighelper.py allows options to be specified in a json or yaml config file, specified by a --config=<file> option, 
-**and** allows options to be specified at the command line. File-specified and command-line specified options will be
+`confighelper.py` allows options to be specified in a json or yaml config file, specified by a `--config=<file>` option, 
+**and** to be specified at the command line. File-specified and command-line specified options will be
 merged into a single dictionary, with none-null command-line options taking precedence and overriding the same specified
 within a file. 
 
@@ -35,19 +39,29 @@ I combined the awesomeness of docopt with the awesomeness of yaml.
 
 ## Dependencies
 
-json or yaml, docopt
+json or [yaml](http://pyyaml.org/), [docopt](https://github.com/docopt/docopt)
 
-# Usage
 
-To use this module, import and call the confighelper.config function,  passing in the calling module's docstring
-and command-line arguments.  Look in the example subdirectory and try:
+## Quick start
 
-    $> python mymodule.py --config=simple.yaml --option2=hello
+    $> git clone https://github.com/samwisehawkins/confighelper.git
+	$> cd confighelper/example
+	$> python mymodule.py --config=simple.yaml --option2=yipee
 
-    
+
+## Usage
+
+Write a docstring following the [docopt](http://docopt.org/) syntax. Import
+`confighelper.py`, and call `confighelper.config(docstring)`. 
+
+
+Example  
+
     mymodule.py
-    """mymodule.py docstring in docopt recognised format see docopt
-        Usage: 
+    """mymodule.py simple example to illustrate use of confighelper
+	   docstring in docopt recognised format
+       
+	   Usage: 
         mymodule.py [--config=<file>]
                 [--option1=arg1]
                 [--option2=arg2]
@@ -57,14 +71,17 @@ and command-line arguments.  Look in the example subdirectory and try:
     
         Options:
             --config=<file>    configuration file to specify options
-            --config-fmt=<fmt> configuration file format [default: JSON]
+            --config-fmt=<fmt> configuration file format (JSON or YAML) [default: JSON]
             --option1=arg1     anything specified here will ovveride the config file 
-     """
+            --option3=arg3
+            --option4=arg4
+            --option5=arg5
+	"""
     
     import confighelper as conf
-    config = conf.config(__doc__, sys.argv[1:] )
-    # config will be a merged dictionary of file and command-line args
+    config = conf.config(__doc__, sys.argv[1:] ) # parse and merge file-based and command-line args
     print config
+
     
 Suppose we have the following (simple) configuration file (note lack of preceeding '--')
 
@@ -78,19 +95,18 @@ Suppose we have the following (simple) configuration file (note lack of preceedi
 Then run mymodule.py:
 
     $>python mymodule.py --config=myconfig.yaml --option3=xyz
+    {'config': 'simple.yaml', 'option4': 'd', 'option5': 'e', 'option2': 'yipeee', 'option3': 'c', 'option1': 'a'}
 
-
-If ** and only if ** a --config option is supplied at the command-line, this will be read and parsed, and merged with any 
-other command-line arguments.  
+Command-line arguments will only be parsed if they are defined in the doctsring. Options specified in the file will be parsed, 
+evenif they are not defined in the docstring. The user must ensure the docstring is up-to-date.
 
 A potential "gotcha" is that any **defaults** specified using the docopt docstring will override those specified in the config file, 
-since defaults will be supplied as command-line arguments, even if they are not defined on the command line.
+since defaults will be supplied as command-line arguments even if they are not defined on the command line.
 Therefore it is preferrable **not** to specify defaults in the docstring, but place them in a defaults config file. 
 
 Command-line options are stripped of preceding "--", to allow the equivalent file options to be specified without a leading "--". 
 
 ## Expression expansion. 
-
 
 Confighelper recognises three types of expression:
  * environment variables using $(var) syntax
