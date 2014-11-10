@@ -14,7 +14,7 @@ elsewhere in the configuration file.
 To use this module, import and call the confighelper.config function,  passing in the calling module's docstring
 and command-line arguments e.g.
     
-    mymodule.py
+    example.py
     "mymodule.py docstring in docopt recognised format see docopt"
     
     import confighelper as conf
@@ -93,6 +93,8 @@ def main():
     
     # Need this for pretty printing
     import json       
+    
+	# handle dates correctly
     def date_handler(obj):
         return obj.isoformat() if hasattr(obj, 'isoformat') else obj
     
@@ -354,7 +356,8 @@ def parse_cmd_args(args, format="json"):
         a new dictionary with any list-like values expanded"""
     
     jargs = {}
-    # match list expression or dictionary expression
+    
+	# match list expression or dictionary expression
     exp = re.compile("(\[.*\]) | (\{.*\})")
     lexpr =  re.compile("\[.*\]")
     dexpr =  re.compile("\{.*\}")
@@ -369,7 +372,7 @@ def parse_cmd_args(args, format="json"):
 
     for (k,v) in args.items():
         #if v and type(v)==type("") and ( lexpr.match(v) or dexpr.match(v)):
-        if v and type(v)==type(""):
+        if v and stringy(v):
 
             if format in JSON:
                 jv = json.loads(v)

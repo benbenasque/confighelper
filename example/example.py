@@ -1,7 +1,7 @@
-"""mymodule.py docstring in docopt recognised format see docopt
+"""example.py docstring in docopt recognised format see docopt
 
 	Usage: 
-	mymodule.py [--config=<file>]
+	example.py [--config=<file>]
 			[--option1=arg1]
 			[--option2=arg2]
 			[--option3=arg3]
@@ -19,7 +19,11 @@
     
 import confighelper as conf
 import sys
+import pprint
+
+# get configuration by passing in docstring and command-line arguments
 config = conf.config(__doc__, sys.argv[1:] )
 
 # config will be a merged dictionary of file and command-line args
-print config
+pp = pprint.PrettyPrinter(indent=4)
+pp.pprint(config)
