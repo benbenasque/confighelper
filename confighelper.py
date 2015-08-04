@@ -3,9 +3,9 @@
 Dependencies: json or yaml, docopt
 
 confighelper.py allows options to be specified in a json or yaml config file, specified by a --config=<file> option, 
-**and** allows options to be specified at the command line. File specified and command line specified options will be
-merged into a single dictionary, with none-null command-line options taking precedence and overriding the same specified
-within a file. Only those command-line arguments specified in the docstring can be given at the command line, while anything
+**and** allows options to be specified at the command line. File-specified and command-line specified options will be
+merged into a single dictionary, with none-null command-line options taking precedence over file-specified.
+Only those command-line arguments specified in the docstring can be given at the command line, while anything
 can be put into a configuration file. It is up to the user to keep the docstring up-to-date.
 
 Furthermore, configuration files can import other configuration files, can refer to environment variables and variables defined
@@ -111,8 +111,7 @@ def config(docstring, args, format="json"):
     Arguments:
     docstring -- calling module's docstring in docopt recognised format
     args      -- command line arguments as in sys.argv[1:]
-    format    -- format for parsing configuration files (default json)
-    """
+    format    -- format for parsing configuration files (default json)"""
     
     # parse command-line arguments using docopt
     cargs  = docopt.docopt(docstring,args)
