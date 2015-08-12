@@ -290,7 +290,7 @@ def lookup(string, scope):
             if not basic_type(result):
                 raise Exception("expressions must refer to strings or values with a basic type: %s resolves to type %s" %(string, type(result)))
             else:
-                result = str(value)
+                result = str(result)
         return result
 
 
