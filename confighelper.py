@@ -82,7 +82,7 @@ EVAR  = re.compile('\$\(.*?\)')                              # match rows contai
 LVAR  = re.compile('%\(.*?\)')                               # match rows containing local vars 
 CVAR = [re.compile('%\[.*\.'+e+'\]' ) for e in JSON + YAML]  # match rows containing config file specifiers
 
-BASIC_TYPES = [int,float]                                    # basic types that can be converted to a simple string
+BASIC_TYPES = [int,float, bool,str, unicode]                 # basic types that can be referred to by expressions
 
 class ConfigError(Exception):
     pass
@@ -286,11 +286,8 @@ def lookup(string, scope):
     name = string[2:-1]
     if name in scope:
         result = scope[name]
-        if not stringy(result):
-            if not basic_type(result):
-                raise Exception("expressions must refer to strings or values with a basic type: %s resolves to type %s" %(string, type(result)))
-            else:
-                result = str(result)
+        if not basic_type(result):
+            raise Exception("expressions must refer to strings or values with a basic type: %s resolves to type %s" %(string, type(result)))
         return result
 
 
