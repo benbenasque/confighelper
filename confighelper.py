@@ -256,7 +256,7 @@ def basic_type(value):
     return type(value) in BASIC_TYPES
         
 def stringy(value):
-    return isinstance(value, (str, unicode))
+    return isinstance(value, (str,))
 
 def listy(value):
     return hasattr(value, "__getitem__") and not stringy(value)    
