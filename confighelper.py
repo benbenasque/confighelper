@@ -67,6 +67,12 @@ Options:
         --option5=arg5 """
 
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals        
+        
+        
 import sys
 import os
 import re
@@ -82,7 +88,7 @@ EVAR  = re.compile('\$\(.*?\)')                              # match rows contai
 LVAR  = re.compile('%\(.*?\)')                               # match rows containing local vars 
 CVAR = [re.compile('%\[.*\.'+e+'\]' ) for e in JSON + YAML]  # match rows containing config file specifiers
 
-BASIC_TYPES = [int,float, bool,str, unicode]                 # basic types that can be referred to by expressions
+BASIC_TYPES = [int,float, bool, str]                 # basic types that can be referred to by expressions
 
 class ConfigError(Exception):
     pass
@@ -99,7 +105,7 @@ def main():
     def date_handler(obj):
         return obj.isoformat() if hasattr(obj, 'isoformat') else obj
     
-    print json.dumps(c, indent=4, default=date_handler)
+    print(json.dumps(c, indent=4, default=date_handler))
    
 
 def config(docstring, args, format="json"):
