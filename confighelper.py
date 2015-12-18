@@ -224,11 +224,10 @@ def load(fname, evar=EVAR, lvar=LVAR, cvar=CVAR, format=None):
         
     return result
     # expand any local variable definitions, i.e. nodes in the graph that refer to each other
-    tree = parent.copy()
-    scope = parent.copy()
-    result = expand_tree(tree, scope, lvar)
-    
-    return result
+    #tree = parent.copy()
+    #scope = parent.copy()
+    #result = expand_tree(tree, scope, lvar)
+    #return result
 
 
 def get_format(filename):
