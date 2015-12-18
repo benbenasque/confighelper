@@ -50,21 +50,10 @@ The order of expansion is as follows:
 This module itself can be run from the command line:
 
 Usage: 
-    confighelper.py [--config=<file>]
-              [--config-fmt=<fmt>]
-                [--option1=arg1]
-                [--option2=arg2]
-                [--option3=arg3]
-                [--option4=arg4]
-                [--option5=arg5]
+    confighelper.py [--config=<file>] [options]
+
 Options:
-        --config=<file>    configuration file to specify options
-        --config-fmt=<fmt> configuration file format [default: JSON]
-        --option1=arg1     anything specified here will ovveride the config file 
-        --option2=arg2      
-        --option3=arg3
-        --option4=arg4
-        --option5=arg5 """
+        --config=<file>    configuration file to specify options"""
 
 
 from __future__ import absolute_import
@@ -79,6 +68,8 @@ import re
 import docopt
 from collections import OrderedDict
 import pprint
+import yaml
+import json
 
 # Supported file format extentions
 JSON = ["json"]
@@ -86,7 +77,7 @@ YAML = ["yaml", "yml"]
 
 EVAR  = re.compile('\$\(.*?\)')                              # match rows containing environment vars
 LVAR  = re.compile('%\(.*?\)')                               # match rows containing local vars 
-CVAR = [re.compile('%\[.*\.'+e+'\]' ) for e in JSON + YAML]  # match rows containing config file specifiers
+CVAR =  re.compile('%\[.*\]' )                               # match rows containing config file %[file]
 
 BASIC_TYPES = [int,float, bool, str]                 # basic types that can be referred to by expressions
 
@@ -98,14 +89,9 @@ def main():
  
     c = config(__doc__, sys.argv[1:] )
     
-    # Need this for pretty printing
-    import json       
+    print(dump(c,"yaml",indent=4))
     
-	# handle dates correctly
-    def date_handler(obj):
-        return obj.isoformat() if hasattr(obj, 'isoformat') else obj
-    
-    print(json.dumps(c, indent=4, default=date_handler))
+    #print(json.dumps(c, indent=4, default=date_handler))
    
 
 def config(docstring, args, format="json"):
@@ -123,24 +109,11 @@ def config(docstring, args, format="json"):
     # parse command-line arguments using docopt
     cargs  = docopt.docopt(docstring,args)
         
-    if '--config-fmt' in cargs and cargs['--config-fmt']:
-        format = cargs['--config-fmt']
-    
-    # if a config file is specified in the --config argument
-    elif '--config' in cargs and cargs['--config']:
-        format = cargs['--config'].split('.')[-1]
-    
-        
-    if format in JSON:
-        import json
 
-    elif format in YAML:
-        import yaml
-
-    # strip command line arguments of leading --
+    # strip command line arguments of leading '--', as we never specify these in a file
     cargs = {key.lstrip("--"): cargs[key] for key in cargs.keys()}
     
-    # always parse command-line arguments as yaml, as this saves having to put quotes around arguments
+    # always parse command-line arguments as yaml, as this is less verbose the JSON with all its quotation
     cargs = parse_cmd_args(cargs, format="yaml")
 
     # if a config file is specified, and is not 'falsy'
@@ -152,8 +125,18 @@ def config(docstring, args, format="json"):
         return cargs
 
 
-       
+
+def dump(data, fmt, **kwds):
+
+    if fmt in JSON:
+        out = json.dumps(data, **kwds)
+    elif fmt in YAML:
+        out = yaml.dump(data, **kwds)
+    else:
+        out = str(data)
         
+    return out
+    
 def load(fname, evar=EVAR, lvar=LVAR, cvar=CVAR, format=None):
     """Loads a config file, and recursively opens any included config files 
     
@@ -200,12 +183,8 @@ def load(fname, evar=EVAR, lvar=LVAR, cvar=CVAR, format=None):
     
     
     if format==None:
-        format = fname.split(".")[-1]    
-    if format in JSON:
-        import json
-    elif format in YAML:
-        import yaml
-    else:
+        format = get_format(fname)
+    if format not in JSON + YAML:
         raise ConfigError("config format not supported")
     
     path, name = os.path.split(fname)
@@ -220,38 +199,31 @@ def load(fname, evar=EVAR, lvar=LVAR, cvar=CVAR, format=None):
     # expand any environment variables into the string
     confstr = expand_evar(confstr, os.environ, evar)
     
+    # expand any nested imports into the string
+    confstr = expand_cvar(confstr, cvar)
+    
+    
     # parse as json or yaml
     if format in JSON:
         parent=json.loads(confstr)
     
     if format in YAML:
         parent = yaml.load(confstr)
+    
+    
 
-    # now walk through tree and expand any nested imports
-    for key,value in parent.items():
-        
-        # if key is a string, and matches a config file expression
-        if stringy(key) and any(regex.match(key) for regex in cvar):
-            subfname = key[2:-1]
-            subconf = load(path+"/"+subfname,evar, lvar, cvar, format=format)
-            # merge subconfiguration into parent scope
-            parent.update(subconf)
-            del(parent[key])
-        
-        # if value is a string, and values matches a config file expression
-        if stringy(value) and any(regex.match(value) for regex in cvar):
-            subfname = value[2:-1]
-            subconf = load(path+"/"+subfname,evar, lvar, cvar, format=format)
-            parent[key] = subconf
-            
-
-    # now expand any local variable definitions, i.e. nodes in the graph that refer to each other
+    # expand any local variable definitions, i.e. nodes in the graph that refer to each other
     tree = parent.copy()
     scope = parent.copy()
     result = expand_tree(tree, scope, lvar)
     
     return result
-        
+
+
+def get_format(filename):
+    return filename.split('.')[-1]
+
+    
 def basic_type(value):
     return type(value) in BASIC_TYPES
         
@@ -263,9 +235,16 @@ def listy(value):
 
 
 def expand(string, scope, expr):
-    """ Replaces an expression in string by looking it up in scope"""
+    """ Replaces an expression in string by looking it up in scope
+    
+    Arguments
+    string -- the string containing expressions e.g. %(key)
+    scope  -- dictionary to lookup keys in
+    expression -- a regular expression which matches expressions
+    
+    Returns -- the original string with all resolveable expressions replaced"""
+    
     result = string
-
     # if no local variable definitions in string
     if not expr.search(result):
         return result
@@ -274,15 +253,19 @@ def expand(string, scope, expr):
     exprs = expr.findall(string)
     for ex in exprs:
         expanded = lookup(ex, scope)
+        print("\n\nhelloe")
+        print(expanded)
+        print(type(expanded))
+        print(stringy(expanded))
         
-        # if it hasn't changed,then we can stop 
+        # if nothing is found, we can stop looking
         if not expanded:
             continue
-        
+
         # otherwise we test whether there are still expressions in the string
-        elif expr.search(expanded):
+        elif stringy(expanded) and expr.search(expanded):
             expanded = expand(expanded, scope, expr)
-        result   = result.replace(ex, expanded)
+        result   = result.replace(ex, str(expanded))
     return result
 
 def lookup(string, scope):
@@ -297,19 +280,30 @@ def lookup(string, scope):
         return result
 
 
-def isnode(node):
+def isdict(node):
     return type(node)==type({})
-        
+
         
 def isleaf(node):
-    return not isnode(node)
+    return not isdict(node) and not islist(node)
+
+def islist(node):
+    return type(node)==type([])
+
     
 def expand_tree(tree, scope, expr):
+    if isleaf(tree): 
+        return tree
+
     for key, node in tree.items():
+
         if isleaf(node):
             new_node = expand_leaf(node, scope, expr)
        
-        elif isnode:
+        elif islist(node):
+            new_node = [expand_tree(n,scope,expr) for n in node]
+        
+        elif isdict(node):
             new_node = expand_tree(node, scope, expr)
         
         tree[key] = new_node
@@ -327,13 +321,24 @@ def expand_leaf(node, scope, expr):
 
 
 def expand_evar(s, env, expr):
-
+    """search through a string to find any environment variable expressions and expand into s"""
     vars = expr.findall(s)
     for v in vars:
         vname = v[2:-1]
         if vname in env:
             s = s.replace(v, env[vname])
         else: pass
+    return s
+
+def expand_cvar(s, expr):
+    """search through a string to find any import expressions and load them into s"""
+
+    vars = expr.findall(s)
+    for v in vars:
+        fname = v[2:-1]
+        if os.path.exists(fname):
+            substring = expand_cvar(open(fname, 'r').read(), expr)
+            s = s.replace(v, substring)
     return s
     
 def merge(dict_1, dict_2):

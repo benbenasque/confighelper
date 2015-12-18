@@ -2,4 +2,10 @@ option1         : a                # you can comment a yaml file, handy for docu
 option2         : '%[c2.yaml]'     # putting another file as a value will expand the file
 option3         : 3.0              # value types  will be parsed according to yaml
 option4         : $(HOME)          # environment variables will be expanded
-option5         : '%(option1)'     # local variables already defined can be referenced                     
+option5         : '%(option1)'     # local variables already defined can be referenced
+ordered: 
+    - option8         : test ordering
+    - option7         : original key orders preserved
+    - option6         : 
+        a : even with nesting
+        b : in some levels
