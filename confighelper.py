@@ -211,7 +211,18 @@ def load(fname, evar=EVAR, lvar=LVAR, cvar=CVAR, format=None):
         parent = yaml.load(confstr)
     
     
-
+    # take really low-level approach to expansion here which involves two passes
+    # parse the string as a dict, then use that to replace any local variables with
+    # entries in the dictionary. Restricts local variables to be defined at top-level
+    confstr = expand_lvars(confstr, parent, lvar)
+    
+    if format in JSON:
+        result = json.loads(confstr)
+    
+    if format in YAML:
+        result = yaml.load(confstr)
+        
+    return result
     # expand any local variable definitions, i.e. nodes in the graph that refer to each other
     tree = parent.copy()
     scope = parent.copy()
@@ -253,10 +264,6 @@ def expand(string, scope, expr):
     exprs = expr.findall(string)
     for ex in exprs:
         expanded = lookup(ex, scope)
-        print("\n\nhelloe")
-        print(expanded)
-        print(type(expanded))
-        print(stringy(expanded))
         
         # if nothing is found, we can stop looking
         if not expanded:
@@ -341,6 +348,17 @@ def expand_cvar(s, expr):
             s = s.replace(v, substring)
     return s
     
+    
+def expand_lvars(s, scope, expr):
+    vars = expr.findall(s)
+    for v in vars:
+        vname = v[2:-1]
+        if vname in scope:
+            s = s.replace(v, str(scope[vname]))
+        else: pass
+    return s
+    
+
 def merge(dict_1, dict_2):
     """Merge two dictionaries.    
     Values that evaluate to true take priority over falsy values.    
