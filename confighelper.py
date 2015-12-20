@@ -357,8 +357,6 @@ def expand_lvars(s, scope, expr):
     for v in vars:
         vname = v[2:-1]
         if vname in scope:
-            print(vname)
-            print(scope[vname])
             s = s.replace(v, str(scope[vname]))
         else: pass
     return s
