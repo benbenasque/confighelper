@@ -196,26 +196,30 @@ def load(fname, evar=EVAR, lvar=LVAR, cvar=CVAR, format=None):
     # open the filename and read as a string
     confstr = open(fname, 'r').read()
     
-    # expand any environment variables into the string
-    confstr = expand_evar(confstr, os.environ, evar)
-    
     # expand any nested imports into the string
     confstr = expand_cvar(confstr, cvar)
-    
-    
+
+    # expand any environment variables into the string
+    confstr = expand_evar(confstr, os.environ, evar)
+
     # parse as json or yaml
     if format in JSON:
         parent=json.loads(confstr)
     
     if format in YAML:
         parent = yaml.load(confstr)
-    
+   
     
     # take really low-level approach to expansion here which involves two passes
     # parse the string as a dict, then use that to replace any local variables with
     # entries in the dictionary. Restricts local variables to be defined at top-level
-    confstr = expand_lvars(confstr, parent, lvar)
-    
+    # This is ugly, should be a recursive functionm but implemented here as a fixed
+    # number of expansions
+    for n in range(10):
+        confstr = expand_lvars(confstr, parent, lvar)
+        
+        
+
     if format in JSON:
         result = json.loads(confstr)
     
@@ -353,6 +357,8 @@ def expand_lvars(s, scope, expr):
     for v in vars:
         vname = v[2:-1]
         if vname in scope:
+            print(vname)
+            print(scope[vname])
             s = s.replace(v, str(scope[vname]))
         else: pass
     return s
