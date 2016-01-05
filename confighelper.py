@@ -197,7 +197,7 @@ def load(fname, evar=EVAR, lvar=LVAR, cvar=CVAR, format=None):
     confstr = open(fname, 'r').read()
     
     # expand any nested imports into the string
-    confstr = expand_cvar(confstr, cvar)
+    confstr = expand_cvar(confstr, cvar, search_paths=[path, '.'])
 
     # expand any environment variables into the string
     confstr = expand_evar(confstr, os.environ, evar)
@@ -340,16 +340,27 @@ def expand_evar(s, env, expr):
         else: pass
     return s
 
-def expand_cvar(s, expr):
-    """search through a string to find any import expressions and load them into s"""
+def expand_cvar(s, expr, search_paths=['.']):
+    """search through a string to find any import expressions and load them into s, looking in specified search paths"""
 
     vars = expr.findall(s)
     for v in vars:
         fname = v[2:-1]
-        if os.path.exists(fname):
-            substring = expand_cvar(open(fname, 'r').read(), expr)
-            s = s.replace(v, substring)
+        found = False
+        for path in search_paths:
+            fullname = os.path.join(path, fname)
+            if not os.path.exists(fullname):
+                continue
+            else:
+                substring = expand_cvar(open(fullname, 'r').read(), expr)
+                s = s.replace(v, substring)
+                found = True
+        if not found:
+            raise IOError("import %s: file not found on any search path" % fname)
     return s
+
+
+
     
     
 def expand_lvars(s, scope, expr):

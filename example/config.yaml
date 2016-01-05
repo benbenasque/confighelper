@@ -9,3 +9,4 @@ ordered:
     - option6         : 
         a : even with nesting
         b : in some levels
+%[c3.yaml]                        # import at top level
