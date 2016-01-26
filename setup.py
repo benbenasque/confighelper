@@ -2,10 +2,12 @@ from setuptools import setup
 
 setup(name='confighelper',
       version='0.1',
-      description='Command-line and file based nested configuration handling',
+      description='Simultaneous command-line and yaml file configuration handling',
       url='https://github.com/samwisehawkins/confighelper',
       author='Sam Hawkins',
       author_email='sam@computing.io',
       license='MIT',
-      packages=[''],
-      zip_safe=False)
+      packages=['confighelper'],
+      install_requires = ['pyyaml'])
+      
+
