@@ -7,7 +7,7 @@ setup(name='confighelper',
       author='Sam Hawkins',
       author_email='sam@computing.io',
       license='MIT',
-      packages=['confighelper'],
+      py_modules=['confighelper', 'docopt'],
       install_requires = ['pyyaml'])
       
 

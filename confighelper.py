@@ -97,6 +97,7 @@ def config(docstring, args, format="json"):
     # if a config file is specified, and is not 'falsy'
     if 'config' in cargs and cargs['config']:
         cfile = load(cargs['config'])
+        # merge the command-line and file based dictionaries
         merged = merge(cargs, cfile)
         return merged
     else:
