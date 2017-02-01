@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to project’s documentation! &#8212; confighelper 0.1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-project-s-documentation">
+<h1>Welcome to project&#8217;s documentation!<a class="headerlink" href="#welcome-to-project-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+<span class="target" id="module-confighelper"></span><p>confighelper.py provides extended yaml and command-line configuration handling.</p>
+<dl class="docutils">
+<dt>confighelper.py merges command and yaml config file options. Furthemore it allows</dt>
+<dd><ul class="first last simple">
+<li>import statements</li>
+<li>environment variables</li>
+<li>local variables within the same configuration</li>
+</ul>
+</dd>
+</dl>
+<p>Dependencies: yaml docopt</p>
+<p>A config file is specified via a &#8211;config=&lt;file&gt; option, File-specified and command-line specified options will be
+merged into a single dictionary, with none-null command-line options taking precedence over file-specified.
+Only those command-line arguments specified in the docstring can be given at the command line, while anything
+can be put into a configuration file. It is up to the user to keep the docstring up-to-date.</p>
+<p>To use this module, import and call the confighelper.config function,  passing in the calling module&#8217;s docstring
+and command-line arguments e.g.</p>
+<blockquote>
+<div><p>example.py
+&#8220;mymodule.py docstring in docopt recognised format see docopt&#8221;</p>
+<p>import confighelper as conf
+config = conf.config(__doc__, sys.argv[1:] )</p>
+</div></blockquote>
+<p>This module itself can be run from the command line:</p>
+<dl class="docutils">
+<dt>Usage: </dt>
+<dd>confighelper.py [&#8211;config=&lt;file&gt;] [&#8211;option1=&lt;val]</dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--config=<var>&lt;file&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>configuration file to specify options</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<p>See README.md and /docs  for more details</p>
+<dl class="function">
+<dt id="confighelper.config">
+<code class="descclassname">confighelper.</code><code class="descname">config</code><span class="sig-paren">(</span><em>docstring</em>, <em>args</em>, <em>format='json'</em><span class="sig-paren">)</span><a class="headerlink" href="#confighelper.config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Marshall command line arguments with docopt, then load,
+expand, and merge with config file if specfied by 
+&#8211;config=&lt;file&gt; option.</p>
+<p>Arguments:
+docstring &#8211; calling module&#8217;s docstring in docopt recognised format
+args      &#8211; command line arguments as in sys.argv[1:]
+format    &#8211; format for parsing configuration files (default json)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="confighelper.expand">
+<code class="descclassname">confighelper.</code><code class="descname">expand</code><span class="sig-paren">(</span><em>string</em>, <em>scope</em>, <em>expr</em><span class="sig-paren">)</span><a class="headerlink" href="#confighelper.expand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replaces an expression in string by looking it up in scope</p>
+<p>Arguments
+string &#8211; the string containing expression statements e.g. %(key)
+scope  &#8211; dictionary to lookup keys in
+expression &#8211; a regular expression which matches expressions</p>
+<p>Returns &#8211; the original string with all resolveable expressions replaced</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="confighelper.expand_cvar">
+<code class="descclassname">confighelper.</code><code class="descname">expand_cvar</code><span class="sig-paren">(</span><em>s, expr, search_paths=['.']</em><span class="sig-paren">)</span><a class="headerlink" href="#confighelper.expand_cvar" title="Permalink to this definition">¶</a></dt>
+<dd><p>search through a string to find any import expressions and load them into s, looking in specified search paths</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="confighelper.expand_evar">
+<code class="descclassname">confighelper.</code><code class="descname">expand_evar</code><span class="sig-paren">(</span><em>s</em>, <em>env</em>, <em>expr</em><span class="sig-paren">)</span><a class="headerlink" href="#confighelper.expand_evar" title="Permalink to this definition">¶</a></dt>
+<dd><p>search through a string to find any environment variable expressions and expand into s</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="confighelper.lookup">
+<code class="descclassname">confighelper.</code><code class="descname">lookup</code><span class="sig-paren">(</span><em>string</em>, <em>scope</em><span class="sig-paren">)</span><a class="headerlink" href="#confighelper.lookup" title="Permalink to this definition">¶</a></dt>
+<dd><p>lookup an expression string within a scope (dictionary) and return result. If string not found, 
+returns None. Characters 0,1 and -1 are ignored e.g. %(key1) and $(key2) %[key3] become key1 and key2 and key3.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="confighelper.merge">
+<code class="descclassname">confighelper.</code><code class="descname">merge</code><span class="sig-paren">(</span><em>dict_1</em>, <em>dict_2</em><span class="sig-paren">)</span><a class="headerlink" href="#confighelper.merge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge two dictionaries.    
+Values that evaluate to true take priority over falsy values.    
+<cite>dict_1</cite> takes priority over <cite>dict_2</cite>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="confighelper.parse_cmd_args">
+<code class="descclassname">confighelper.</code><code class="descname">parse_cmd_args</code><span class="sig-paren">(</span><em>args</em>, <em>format='json'</em><span class="sig-paren">)</span><a class="headerlink" href="#confighelper.parse_cmd_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse command line arguments as json/yaml</p>
+<dl class="docutils">
+<dt>Arguments: </dt>
+<dd>args &#8211; a dictionary mapping argument names to their values</dd>
+<dt>Returns:</dt>
+<dd>a new dictionary with any list-like values expanded</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to project&#8217;s documentation!</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Sam Hawkins.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
