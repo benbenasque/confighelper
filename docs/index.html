@@ -134,57 +134,54 @@
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
 </div>
-<span class="target" id="module-confighelper"></span><p>confighelper.py provides extended yaml and command-line configuration handling.</p>
+<span class="target" id="module-confighelper"></span><p>confighelper.py provides extended yaml and command-line configuration handling for command-line tools.</p>
+<p>confighelper.py parsers command-line arguments, <strong>and</strong>  a yaml configuration file,  and returns
+a single merged dictionary of configuration options.  None-null command-line arguments take precedence
+over those specified in a configuration file.</p>
 <dl class="docutils">
-<dt>confighelper.py merges command and yaml config file options. Furthemore it allows</dt>
+<dt>Furthemore confighelper extends the yaml syntax to allow:</dt>
 <dd><ul class="first last simple">
-<li>import statements</li>
-<li>environment variables</li>
-<li>local variables within the same configuration</li>
+<li>nested import statements within a yaml file</li>
+<li>environment variables specified within a yaml file</li>
+<li>local variables to be defined and used in composition within a yaml file</li>
 </ul>
 </dd>
 </dl>
-<p>Dependencies: yaml docopt</p>
-<p>A config file is specified via a &#8211;config=&lt;file&gt; option, File-specified and command-line specified options will be
-merged into a single dictionary, with none-null command-line options taking precedence over file-specified.
-Only those command-line arguments specified in the docstring can be given at the command line, while anything
+<p>A config file is specified via a <code class="docutils literal"><span class="pre">--config=&lt;file&gt;</span></code> option. Only those command-line arguments specified in the docstring can be given at the command line, while anything
 can be put into a configuration file. It is up to the user to keep the docstring up-to-date.</p>
-<p>To use this module, import and call the confighelper.config function,  passing in the calling module&#8217;s docstring
-and command-line arguments e.g.</p>
-<blockquote>
-<div><p>example.py
-&#8220;mymodule.py docstring in docopt recognised format see docopt&#8221;</p>
-<p>import confighelper as conf
-config = conf.config(__doc__, sys.argv[1:] )</p>
-</div></blockquote>
-<p>This module itself can be run from the command line:</p>
-<dl class="docutils">
-<dt>Usage:</dt>
-<dd>confighelper.py [&#8211;config=&lt;file&gt;] [&#8211;option1=&lt;val]</dd>
-<dt>Options:</dt>
-<dd><table class="first last docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--config=<var>&lt;file&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&nbsp;</td><td>configuration file to specify options</td></tr>
-</tbody>
-</table>
-</dd>
-</dl>
-<p>See README.md and /docs  for more details</p>
+<p class="rubric">Example</p>
+<p>suppose you write a command-line tool mytool.py:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="s2">&quot;mytool.py docstring in docopt recognised format</span>
+
+<span class="n">Usage</span><span class="p">:</span>
+    <span class="n">mytool</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">config</span><span class="o">=&lt;</span><span class="n">file</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">option1</span><span class="o">=&lt;</span><span class="n">value1</span><span class="o">&gt;</span><span class="s2">&quot;</span>
+
+<span class="kn">import</span> <span class="nn">confighelper</span> <span class="k">as</span> <span class="nn">conf</span>
+<span class="c1"># this will load the configuration from &lt;file&gt;,</span>
+<span class="c1"># and merge in option1: value1 from  the command line</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">__doc__</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="p">)</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
 <dl class="function">
 <dt id="confighelper.config">
 <code class="descclassname">confighelper.</code><code class="descname">config</code><span class="sig-paren">(</span><em>docstring</em>, <em>args</em>, <em>format='json'</em><span class="sig-paren">)</span><a class="headerlink" href="#confighelper.config" title="Permalink to this definition">¶</a></dt>
-<dd><p>Marshall command line arguments with docopt, then load,
-expand, and merge with config file if specfied by
-&#8211;config=&lt;file&gt; option.</p>
-<p>Arguments:
-docstring &#8211; calling module&#8217;s docstring in docopt recognised format
-args      &#8211; command line arguments as in sys.argv[1:]
-format    &#8211; format for parsing configuration files (default json)</p>
+<dd><p>Parse command-line arguments, load a configuration file if specified, and merge.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>docstring</strong> &#8211; calling module&#8217;s docstring in docopt recognised format</li>
+<li><strong>args</strong> &#8211; command line arguments i.e. in sys.argv[1:]</li>
+<li><strong>format</strong> &#8211; format for parsing configuration files (default json)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a dictionary merged from command-line and file specified options</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">

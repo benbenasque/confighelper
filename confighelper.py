@@ -1,33 +1,33 @@
-"""confighelper.py provides extended yaml and command-line configuration handling. 
+"""confighelper.py provides extended yaml and command-line configuration handling for command-line tools. 
 
-confighelper.py parsers command-line arguments, **and** reads a configuration file,  providing
+confighelper parses command-line arguments, **and**  a yaml configuration file,  and returns
 a single merged dictionary of configuration options.  None-null command-line arguments take precedence 
-over any specified in a configuration file.
+over those specified in a configuration file.
 
 Furthemore confighelper extends the yaml syntax to allow:
-    * import statements within a yaml file
+    * nested import statements within a yaml file
     * environment variables specified within a yaml file
-    * local variables to be used later within the same configuration, included embedding them as part of other values. 
+    * local variables to be defined and used in composition within a yaml file
 
 
-A config file is specified via a ``--config=<file>`` option. Only those command-line arguments specified in the docstring can be given at the command line, while anything
-can be put into a configuration file. It is up to the user to keep the docstring up-to-date.
+If a config file is specified via a ``--config=<file>`` command-line argument, then that file is read and parsed as a dictionary. 
+Any other command-line arguments are merged into this.  Docopt is used to marhsall command-line arguments, so any command-line tool
+you write must have a docopt-recognised usage string.
 
 Example:
-     Import and call the confighelper.config function,  passing in your module's docstring
-     and any command-line arguments e.g::
+     suppose you write a command-line tool mytool.py::
     
-        """mymodule.py docstring in docopt recognised format see docopt"""
+        "mytool.py docstring in docopt recognised format
+
+        Usage:
+            mytool.py --config=<file> --option1=<value1>"
     
         import confighelper as conf
-        config = conf.config(__doc__, sys.argv[1:] )
+        # this will load the configuration from <file>, 
+        # and merge in option1: value1 from  the command line
+        config = conf.config(__doc__, sys.argv[1:] )"
 
-Usage: 
-    confighelper.py [--config=<file>] [--option1=<val]
-
-Options:
-        --config=<file>    configuration file to specify options
-        --option1=<val>    value for option1 argument"""
+"""
 
 
 from __future__ import absolute_import
@@ -62,23 +62,17 @@ class ConfigError(Exception):
     pass
 
 
-def main():
-
-    c = config(__doc__, sys.argv[1:])
-
-    print(dump(c, "yaml", indent=4))
-
-
 def config(docstring, args, format="json"):
-    """Marshall command line arguments with docopt, then load,
-    expand, and merge with config file if specfied by 
-    --config=<file> option.
-
+    """Parse command-line arguments, load a configuration file if specified, and merge.
+    
     Arguments:
-    docstring -- calling module's docstring in docopt recognised format
-    args      -- command line arguments as in sys.argv[1:]
-    format    -- format for parsing configuration files (default json)"""
+        docstring : calling module's docstring in docopt recognised format
+        args      : command line arguments i.e. in sys.argv[1:]
+        format    : format for parsing configuration files (default json)
 
+    Returns:
+        a dictionary merged from command-line and file specified options"""
+        
     # parse command-line arguments using docopt
     cargs = docopt.docopt(docstring, args)
 
