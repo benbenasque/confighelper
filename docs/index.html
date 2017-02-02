@@ -135,7 +135,7 @@
 <div class="toctree-wrapper compound">
 </div>
 <span class="target" id="module-confighelper"></span><p>confighelper.py provides extended yaml and command-line configuration handling for command-line tools.</p>
-<p>confighelper.py parsers command-line arguments, <strong>and</strong>  a yaml configuration file,  and returns
+<p>confighelper parses command-line arguments, <strong>and</strong>  a yaml configuration file,  and returns
 a single merged dictionary of configuration options.  None-null command-line arguments take precedence
 over those specified in a configuration file.</p>
 <dl class="docutils">
@@ -147,8 +147,9 @@ over those specified in a configuration file.</p>
 </ul>
 </dd>
 </dl>
-<p>A config file is specified via a <code class="docutils literal"><span class="pre">--config=&lt;file&gt;</span></code> option. Only those command-line arguments specified in the docstring can be given at the command line, while anything
-can be put into a configuration file. It is up to the user to keep the docstring up-to-date.</p>
+<p>If a config file is specified via a <code class="docutils literal"><span class="pre">--config=&lt;file&gt;</span></code> command-line argument, then that file is read and parsed as a dictionary.
+Any other command-line arguments are merged into this.  Docopt is used to marhsall command-line arguments, so any command-line tool
+you write must have a docopt-recognised usage string.</p>
 <p class="rubric">Example</p>
 <p>suppose you write a command-line tool mytool.py:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="s2">&quot;mytool.py docstring in docopt recognised format</span>
