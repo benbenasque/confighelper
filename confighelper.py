@@ -1,35 +1,33 @@
 """confighelper.py provides extended yaml and command-line configuration handling. 
 
-confighelper.py merges command and yaml config file options. Furthemore it allows
-    * import statements
-    * environment variables
-    * local variables within the same configuration
+confighelper.py parsers command-line arguments, **and** reads a configuration file,  providing
+a single merged dictionary of configuration options.  None-null command-line arguments take precedence 
+over any specified in a configuration file.
 
-Dependencies: yaml docopt
+Furthemore confighelper extends the yaml syntax to allow:
+    * import statements within a yaml file
+    * environment variables specified within a yaml file
+    * local variables to be used later within the same configuration, included embedding them as part of other values. 
 
-A config file is specified via a --config=<file> option, File-specified and command-line specified options will be
-merged into a single dictionary, with none-null command-line options taking precedence over file-specified.
-Only those command-line arguments specified in the docstring can be given at the command line, while anything
+
+A config file is specified via a ``--config=<file>`` option. Only those command-line arguments specified in the docstring can be given at the command line, while anything
 can be put into a configuration file. It is up to the user to keep the docstring up-to-date.
 
-To use this module, import and call the confighelper.config function,  passing in the calling module's docstring
-and command-line arguments e.g.
+Example:
+     Import and call the confighelper.config function,  passing in your module's docstring
+     and any command-line arguments e.g::
     
-    example.py
-    "mymodule.py docstring in docopt recognised format see docopt"
+        """mymodule.py docstring in docopt recognised format see docopt"""
     
-    import confighelper as conf
-    config = conf.config(__doc__, sys.argv[1:] )
-
-This module itself can be run from the command line:
+        import confighelper as conf
+        config = conf.config(__doc__, sys.argv[1:] )
 
 Usage: 
     confighelper.py [--config=<file>] [--option1=<val]
 
 Options:
         --config=<file>    configuration file to specify options
-        
-See README.md and /docs  for more details"""
+        --option1=<val>    value for option1 argument"""
 
 
 from __future__ import absolute_import
