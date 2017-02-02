@@ -1,0 +1,19 @@
+package:
+  name: confighelper
+  version: "0.1.1"
+
+build:
+  script:
+    #- pyflakes .
+
+requirements:
+  build:
+    - python
+    - setuptools
+  run:
+    - python
+    - docopt
+    - pyyaml
+  test:
+    - pytest
+

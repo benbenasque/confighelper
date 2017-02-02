@@ -24,7 +24,7 @@ and command-line arguments e.g.
 This module itself can be run from the command line:
 
 Usage: 
-    confighelper.py [--config=<file>] [options]
+    confighelper.py [--config=<file>] [--option1=<val]
 
 Options:
         --config=<file>    configuration file to specify options
@@ -42,8 +42,6 @@ import sys
 import os
 import re
 import docopt
-from collections import OrderedDict
-import pprint
 import yaml
 import json
 
@@ -96,13 +94,41 @@ def config(docstring, args, format="json"):
 
     # if a config file is specified, and is not 'falsy'
     if 'config' in cargs and cargs['config']:
-        cfile = load(cargs['config'])
+        cfile = _load(cargs['config'])
         # merge the command-line and file based dictionaries
-        merged = merge(cargs, cfile)
-        return merged
-    else:
-        return cargs
+        parent = merge(cargs, cfile)
 
+    # otherwise we just take the command-line arguments
+    else:
+        parent =  cargs
+
+    conf = expand_conf(parent)
+    return conf
+    
+def expand_conf(parent):        
+        
+    # now return to configuration as string, and keep replacing any
+    # local variable expressions with expansion in parent scope.
+    # this restricts local variables to be defined at top-level
+    # Stop if the string is unchanged since the last loop, or
+    # we hit MAX_LOOPS, to prevent infinite loops
+    confstr = yaml.dump(parent)
+    previous_confstr = confstr
+    MAX_LOOPS = 10
+    for n in range(MAX_LOOPS):
+        confstr = expand_lvars(confstr, parent, LVAR)
+        # if nothing has changed, then we can stop recursing
+        if confstr == previous_confstr:
+            break
+        else:
+            previous_confstr = confstr
+    
+
+    result = yaml.load(confstr)
+
+    return result
+        
+        
 
 def dump(data, fmt, **kwds):
 
@@ -115,8 +141,15 @@ def dump(data, fmt, **kwds):
 
     return out
 
-
+    
+    
 def load(fname, evar=EVAR, lvar=LVAR, cvar=CVAR, format=None):
+
+    parent = _load(fname, evar=evar, lvar=lvar, cvar=cvar, format=format)
+    conf = expand_conf(parent)
+    return conf
+
+def _load(fname, evar=EVAR, lvar=LVAR, cvar=CVAR, format=None):
     """Loads a config file, and recursively opens any included config files 
 
     Arguments:
@@ -189,29 +222,9 @@ def load(fname, evar=EVAR, lvar=LVAR, cvar=CVAR, format=None):
 
     if format in YAML:
         parent = yaml.load(confstr)
+        
+    return parent
 
-    # now return to configuration as string, and keep replacing any
-    # local variable expressions with expansion in parent scope.
-    # this restricts local variables to be defined at top-level
-    # Stop if the string is unchanged since the last loop, or
-    # we hit MAX_LOOPS, to prevent infinite loops
-    previous_confstr = confstr
-    MAX_LOOPS = 10
-    for n in range(MAX_LOOPS):
-        confstr = expand_lvars(confstr, parent, lvar)
-        # if nothing has changed, then we can stop recursing
-        if confstr == previous_confstr:
-            break
-        else:
-            previous_confstr = confstr
-
-    if format in JSON:
-        result = json.loads(confstr)
-
-    if format in YAML:
-        result = yaml.load(confstr)
-
-    return result
 
 
 def get_format(filename):
@@ -283,7 +296,7 @@ def isleaf(node):
 
 
 def islist(node):
-    return isisntance(node, list)
+    return isinstance(node, list)
 
 
 def expand_evar(s, env, expr):
@@ -360,9 +373,9 @@ def parse_cmd_args(args, format="json"):
     jargs = {}
 
     # match list expression or dictionary expression
-    exp = re.compile("(\[.*\]) | (\{.*\})")
-    lexpr = re.compile("\[.*\]")
-    dexpr = re.compile("\{.*\}")
+    # exp = re.compile("(\[.*\]) | (\{.*\})")
+    # lexpr = re.compile("\[.*\]")
+    # dexpr = re.compile("\{.*\}")
 
     if format in JSON:
         import json
