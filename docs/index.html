@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome to project’s documentation! &mdash; confighelper 0.1.1 documentation</title>
+  <title>Welcome to confighelper’s documentation! &mdash; confighelper 0.1.1 documentation</title>
   
 
   
@@ -84,7 +84,7 @@
             
                 <!-- Local TOC -->
                 <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">Welcome to project&#8217;s documentation!</a></li>
+<li><a class="reference internal" href="#">Welcome to confighelper&#8217;s documentation!</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 </div>
@@ -116,7 +116,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="#">Docs</a> &raquo;</li>
       
-    <li>Welcome to project&#8217;s documentation!</li>
+    <li>Welcome to confighelper&#8217;s documentation!</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -130,8 +130,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="welcome-to-project-s-documentation">
-<h1>Welcome to project&#8217;s documentation!<a class="headerlink" href="#welcome-to-project-s-documentation" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="welcome-to-confighelper-s-documentation">
+<h1>Welcome to confighelper&#8217;s documentation!<a class="headerlink" href="#welcome-to-confighelper-s-documentation" title="Permalink to this headline">¶</a></h1>
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
 </div>
@@ -168,7 +168,7 @@ config = conf.config(__doc__, sys.argv[1:] )</p>
 </div></blockquote>
 <p>This module itself can be run from the command line:</p>
 <dl class="docutils">
-<dt>Usage: </dt>
+<dt>Usage:</dt>
 <dd>confighelper.py [&#8211;config=&lt;file&gt;] [&#8211;option1=&lt;val]</dd>
 <dt>Options:</dt>
 <dd><table class="first last docutils option-list" frame="void" rules="none">
@@ -188,7 +188,7 @@ config = conf.config(__doc__, sys.argv[1:] )</p>
 <dt id="confighelper.config">
 <code class="descclassname">confighelper.</code><code class="descname">config</code><span class="sig-paren">(</span><em>docstring</em>, <em>args</em>, <em>format='json'</em><span class="sig-paren">)</span><a class="headerlink" href="#confighelper.config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Marshall command line arguments with docopt, then load,
-expand, and merge with config file if specfied by 
+expand, and merge with config file if specfied by
 &#8211;config=&lt;file&gt; option.</p>
 <p>Arguments:
 docstring &#8211; calling module&#8217;s docstring in docopt recognised format
@@ -222,15 +222,15 @@ expression &#8211; a regular expression which matches expressions</p>
 <dl class="function">
 <dt id="confighelper.lookup">
 <code class="descclassname">confighelper.</code><code class="descname">lookup</code><span class="sig-paren">(</span><em>string</em>, <em>scope</em><span class="sig-paren">)</span><a class="headerlink" href="#confighelper.lookup" title="Permalink to this definition">¶</a></dt>
-<dd><p>lookup an expression string within a scope (dictionary) and return result. If string not found, 
+<dd><p>lookup an expression string within a scope (dictionary) and return result. If string not found,
 returns None. Characters 0,1 and -1 are ignored e.g. %(key1) and $(key2) %[key3] become key1 and key2 and key3.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="confighelper.merge">
 <code class="descclassname">confighelper.</code><code class="descname">merge</code><span class="sig-paren">(</span><em>dict_1</em>, <em>dict_2</em><span class="sig-paren">)</span><a class="headerlink" href="#confighelper.merge" title="Permalink to this definition">¶</a></dt>
-<dd><p>Merge two dictionaries.    
-Values that evaluate to true take priority over falsy values.    
+<dd><p>Merge two dictionaries.
+Values that evaluate to true take priority over falsy values.
 <cite>dict_1</cite> takes priority over <cite>dict_2</cite>.</p>
 </dd></dl>
 
@@ -238,12 +238,16 @@ Values that evaluate to true take priority over falsy values.
 <dt id="confighelper.parse_cmd_args">
 <code class="descclassname">confighelper.</code><code class="descname">parse_cmd_args</code><span class="sig-paren">(</span><em>args</em>, <em>format='json'</em><span class="sig-paren">)</span><a class="headerlink" href="#confighelper.parse_cmd_args" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse command line arguments as json/yaml</p>
-<dl class="docutils">
-<dt>Arguments: </dt>
-<dd>args &#8211; a dictionary mapping argument names to their values</dd>
-<dt>Returns:</dt>
-<dd>a new dictionary with any list-like values expanded</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>-- a dictionary mapping argument names to their values</strong> (<em>args</em>) &#8211; </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a new dictionary with any list-like values expanded</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
